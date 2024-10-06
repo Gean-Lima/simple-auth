@@ -1,6 +1,10 @@
 # Changelog
 
 
+## v1.1.9
+
+[compare changes](https://github.com/Gean-Lima/simple-auth/compare/v1.1.8...v1.1.9)
+
 ## v1.1.8
 
 [compare changes](https://github.com/Gean-Lima/simple-auth/compare/v1.1.7...v1.1.8)
