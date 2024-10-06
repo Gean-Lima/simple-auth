@@ -1,9 +1,10 @@
-import { defineNuxtRouteMiddleware, useRuntimeConfig } from '#app';
-import { useAuth } from '../composables/useAuth';
+import { defineNuxtRouteMiddleware, useRuntimeConfig } from 'nuxt/app'
+import { useAuth } from '../composables/useAuth'
+import type { ModuleOptions } from '../types/module'
 
-export default defineNuxtRouteMiddleware((to, from) => {
-    const auth = useAuth();
-    const options = useRuntimeConfig().public.authJWT;
+export default defineNuxtRouteMiddleware(() => {
+  const auth = useAuth()
+  const options = useRuntimeConfig().public.simpleAuth as ModuleOptions
 
-    if (auth.isLogged) return options.homePage;
-});
+  if (auth.isLogged) return options.homePage
+})

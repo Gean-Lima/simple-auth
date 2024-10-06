@@ -1,33 +1,45 @@
 <script setup lang="ts">
 definePageMeta({
-    middleware: 'guest'
+  middleware: 'guest',
 })
 
-const auth = useAuth();
+const auth = useAuth()
 
-const email = ref('mraz.joannie@example.org');
-const passwd = ref('password');
+const email = ref('mraz.joannie@example.org')
+const passwd = ref('password')
 
 function clickLogin() {
-    auth.login({email: email.value, password: passwd.value})
-        .catch((err) => {
-            console.log(err);
-        });
+  auth.login({ email: email.value, password: passwd.value })
+    .catch((err) => {
+      console.log(err)
+    })
 }
 </script>
 
 <template>
-    <div class="box-login">
-        <div class="box-input">
-            <input type="email" required placeholder="E-mail" v-model="email" />
-        </div>
-
-        <div class="box-input">
-            <input type="password" required placeholder="Password" v-model="passwd" />
-        </div>
-
-        <button @click="clickLogin">Login</button>
+  <div class="box-login">
+    <div class="box-input">
+      <input
+        v-model="email"
+        type="email"
+        required
+        placeholder="E-mail"
+      >
     </div>
+
+    <div class="box-input">
+      <input
+        v-model="passwd"
+        type="password"
+        required
+        placeholder="Password"
+      >
+    </div>
+
+    <button @click="clickLogin">
+      Login
+    </button>
+  </div>
 </template>
 
 <style scoped>

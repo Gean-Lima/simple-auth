@@ -1,6 +1,6 @@
 export default defineNuxtConfig({
   modules: ['../src/module'],
-  authJWT: {
+  simpleAuth: {
     loginPage: '/',
     homePage: '/home',
     baseUrl: 'http://localhost:8000/api',
@@ -9,25 +9,25 @@ export default defineNuxtConfig({
       method: 'POST',
       token: {
         field: 'access_token',
-        field_expires: 'expires_in'
+        field_expires: 'expires_in',
       },
     },
     logout: {
       url: '/auth/me',
-      method: 'POST'
+      method: 'POST',
     },
     refresh: {
       url: '/auth/refresh',
       method: 'POST',
       token: {
         field: 'access_token',
-        field_expires: 'expires_in'
+        field_expires: 'expires_in',
       },
     },
     me: {
       url: '/auth/me',
-      method: 'POST'
-    }
+      method: 'POST',
+    },
   },
   devtools: { enabled: true },
 })
