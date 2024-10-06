@@ -1,8 +1,20 @@
 {
-  "name": "my-module",
+  "name": "@nuxtjs/simpleauth",
   "version": "1.0.0",
-  "description": "My new Nuxt module",
-  "repository": "your-org/my-module",
+  "description": "A simple authentication module using token",
+  "author": {
+    "name": "Gean Lima",
+    "email": "geanlimasp12345@gmail.com",
+    "url": "https://github.com/Gean-Lima"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Gean-Lima/simple-auth"
+  },
+  "homepage": "https://github.com/Gean-Lima/simple-auth#readme",
+  "bugs": {
+    "url": "https://github.com/Gean-Lima/simple-auth/issues"
+  },
   "license": "MIT",
   "type": "module",
   "exports": {
