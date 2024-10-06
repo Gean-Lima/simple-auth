@@ -1,6 +1,22 @@
 # Changelog
 
 
+## v1.3.0
+
+[compare changes](https://github.com/Gean-Lima/simple-auth/compare/v1.2.0...v1.3.0)
+
+### 🚀 Enhancements
+
+- Add examples in readme ([c0948e9](https://github.com/Gean-Lima/simple-auth/commit/c0948e9))
+
+### 🏡 Chore
+
+- **release:** V1.2.0 ([7b9f6a1](https://github.com/Gean-Lima/simple-auth/commit/7b9f6a1))
+
+### ❤️ Contributors
+
+- Gean Lima <geanlimasp12345@gmail.com>
+
 ## v1.2.0
 
 [compare changes](https://github.com/Gean-Lima/simple-auth/compare/v1.1.4...v1.2.0)
