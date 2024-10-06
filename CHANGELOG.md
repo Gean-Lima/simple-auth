@@ -1,6 +1,28 @@
 # Changelog
 
 
+## v1.2.0
+
+[compare changes](https://github.com/Gean-Lima/simple-auth/compare/v1.1.4...v1.2.0)
+
+### 🚀 Enhancements
+
+- Change org name ([d1d7ee6](https://github.com/Gean-Lima/simple-auth/commit/d1d7ee6))
+- Package changes info ([0656eea](https://github.com/Gean-Lima/simple-auth/commit/0656eea))
+
+### 🏡 Chore
+
+- **release:** V1.1.4 ([e7161b7](https://github.com/Gean-Lima/simple-auth/commit/e7161b7))
+- **release:** V1.1.5 ([23e0867](https://github.com/Gean-Lima/simple-auth/commit/23e0867))
+- **release:** V1.1.6 ([b61c415](https://github.com/Gean-Lima/simple-auth/commit/b61c415))
+- **release:** V1.1.7 ([567ffbf](https://github.com/Gean-Lima/simple-auth/commit/567ffbf))
+- **release:** V1.1.8 ([63a7c5c](https://github.com/Gean-Lima/simple-auth/commit/63a7c5c))
+- **release:** V1.1.9 ([1851fc2](https://github.com/Gean-Lima/simple-auth/commit/1851fc2))
+
+### ❤️ Contributors
+
+- Gean Lima <geanlimasp12345@gmail.com>
+
 ## v1.1.9
 
 [compare changes](https://github.com/Gean-Lima/simple-auth/compare/v1.1.8...v1.1.9)
