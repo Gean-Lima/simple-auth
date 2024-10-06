@@ -1,6 +1,18 @@
 # Changelog
 
 
+## v1.1.2
+
+[compare changes](https://github.com/Gean-Lima/simple-auth/compare/v1.1.1...v1.1.2)
+
+### 🏡 Chore
+
+- **release:** V1.1.1 ([bd54623](https://github.com/Gean-Lima/simple-auth/commit/bd54623))
+
+### ❤️ Contributors
+
+- Gean Lima <geanlimasp12345@gmail.com>
+
 ## v1.1.1
 
 [compare changes](https://github.com/Gean-Lima/simple-auth/compare/v1.1.0...v1.1.1)
