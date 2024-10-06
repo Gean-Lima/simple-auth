@@ -1,15 +1,11 @@
 {
   "name": "@nuxtjs/simpleauth",
-  "version": "1.1.7",
+  "version": "1.1.8",
   "description": "A simple authentication module using token",
-  "author": {
-    "name": "Gean Lima",
-    "email": "geanlimasp12345@gmail.com",
-    "url": "https://github.com/Gean-Lima"
-  },
+  "author": "Gean Lima <geanlimasp12345@gmail.com> (https://github.com/Gean-Lima)",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Gean-Lima/simple-auth"
+    "url": "git+https://github.com/Gean-Lima/simple-auth.git"
   },
   "homepage": "https://github.com/Gean-Lima/simple-auth#readme",
   "bugs": {
@@ -66,5 +62,8 @@
   },
   "publishConfig": {
     "access": "public"
+  },
+  "directories": {
+    "test": "test"
   }
 }
