@@ -4,7 +4,7 @@ import type { ModuleOptions } from './runtime/types/module'
 
 export default defineNuxtModule<ModuleOptions>({
   meta: {
-    name: '@nuxtjs/simpleauth',
+    name: '@geanlima/simpleauth',
     configKey: 'simpleAuth',
   },
   // Default configuration options of the Nuxt module
