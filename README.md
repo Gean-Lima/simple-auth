@@ -73,9 +73,29 @@ export default defineNuxtConfig({
     },
   }
 })
-
 ```
 
+## Examples
+
+```javascript
+const auth = useAuth()
+
+definePageMeta({
+  middleware: ['auth'] // or guest
+})
+
+auth.login({
+  email: 'test@test',
+  password: 'password'
+})
+
+auth.logout();
+
+auth.user
+auth.isLogged
+auth.token
+auth.expires
+```
 
 ## Contribution
 
