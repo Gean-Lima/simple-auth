@@ -1,6 +1,22 @@
 # Changelog
 
 
+## v1.5.0
+
+[compare changes](https://github.com/Gean-Lima/simple-auth/compare/v1.4.0...v1.5.0)
+
+### 🚀 Enhancements
+
+- Lint ([e94ab82](https://github.com/Gean-Lima/simple-auth/commit/e94ab82))
+
+### 🏡 Chore
+
+- **release:** V1.4.0 ([8ca21b1](https://github.com/Gean-Lima/simple-auth/commit/8ca21b1))
+
+### ❤️ Contributors
+
+- Gean-Lima <geanlimasp12345@gmail.com>
+
 ## v1.4.0
 
 [compare changes](https://github.com/Gean-Lima/simple-auth/compare/v1.3.0...v1.4.0)
