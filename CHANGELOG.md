@@ -1,6 +1,27 @@
 # Changelog
 
 
+## v1.4.0
+
+[compare changes](https://github.com/Gean-Lima/simple-auth/compare/v1.3.0...v1.4.0)
+
+### 🚀 Enhancements
+
+- Test environments ([08e2ecc](https://github.com/Gean-Lima/simple-auth/commit/08e2ecc))
+
+### 🩹 Fixes
+
+- Bug fix, redirect and cookies ([c956872](https://github.com/Gean-Lima/simple-auth/commit/c956872))
+
+### 🏡 Chore
+
+- **release:** V1.3.0 ([180ec98](https://github.com/Gean-Lima/simple-auth/commit/180ec98))
+
+### ❤️ Contributors
+
+- Gean-Lima <geanlimasp12345@gmail.com>
+- Gean Lima <geanlimasp12345@gmail.com>
+
 ## v1.3.0
 
 [compare changes](https://github.com/Gean-Lima/simple-auth/compare/v1.2.0...v1.3.0)
