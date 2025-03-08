@@ -75,6 +75,17 @@ export default defineNuxtConfig({
 })
 ```
 
+## You can use environment variables
+```javascript
+export default defineNuxtConfig({
+  modules: ['@geanlima/simpleauth'],
+  simpleAuth: {
+    loginPage: '/',
+    homePage: '/home',
+    baseUrl: process.env.SIMPLEAUTH_BASE_URL,
+    ...
+```
+
 ## Examples
 
 ```javascript
