@@ -1,17 +1,17 @@
-import { defineStore } from 'pinia'
-import axios, { type AxiosResponse } from 'axios'
-import { useRuntimeConfig, useCookie, useRouter, refreshCookie, type CookieOptions } from '#app'
 import { ref } from 'vue'
 import { addMonths } from 'date-fns'
+import axios, { type AxiosResponse } from 'axios'
+import { defineStore } from 'pinia'
+import { useRuntimeConfig, useCookie, useRouter, refreshCookie } from '#app'
 
 export const useAuthStore = defineStore('auth', () => {
-  const expiration = addMonths(new Date(), 3);
+  const expiration = addMonths(new Date(), 3)
   const dataExpiration = {
     maxAge: expiration.getTime() / 1000,
     expires: expiration,
     readonly: false,
     watch: true,
-  };
+  }
   const options = useRuntimeConfig().public.simpleAuth
   const tokenCookie = useCookie('_auth__token', dataExpiration)
   const tokenExpiresCookie = useCookie('_auth__token_expires', dataExpiration)
@@ -19,14 +19,14 @@ export const useAuthStore = defineStore('auth', () => {
   const isLogged = ref(false)
   const token = ref<string | null>(null)
   const expires = ref<number | null>(null)
-  const user = ref<any>(null)
+  const user = ref<unknown>(null)
 
   async function _setup() {
     if (!tokenCookie.value || !tokenExpiresCookie.value) return
 
-    setToken(tokenCookie.value, parseInt(tokenExpiresCookie.value))
+    setToken(tokenCookie.value, Number.parseInt(tokenExpiresCookie.value))
 
-    if (new Date().getTime() > parseInt(tokenExpiresCookie.value)) await refresh()
+    if (new Date().getTime() > Number.parseInt(tokenExpiresCookie.value)) await refresh()
 
     await me()
   }
@@ -40,7 +40,7 @@ export const useAuthStore = defineStore('auth', () => {
         headers: options.login.headers ?? {},
       })
         .then(async (res) => {
-          let { token, expires } = getValuesByResponse(res)
+          const { token, expires } = getValuesByResponse(res)
 
           setTokenCookie(token, expires)
           setToken(token, expires)
@@ -79,13 +79,13 @@ export const useAuthStore = defineStore('auth', () => {
         headers: options.refresh.headers ?? {},
       })
 
-      let { token, expires } = getValuesByResponse(res)
+      const { token, expires } = getValuesByResponse(res)
 
       setTokenCookie(token, expires)
       setToken(token, expires)
     }
-    catch (e: any) {
-      console.error(e.message)
+    catch (e: unknown) {
+      if (e instanceof Error) console.error(e.message)
       clear()
     }
   }
@@ -108,8 +108,8 @@ export const useAuthStore = defineStore('auth', () => {
 
       user.value = res.data
     }
-    catch (e: any) {
-      console.error(e.message)
+    catch (e: unknown) {
+      if (e instanceof Error) console.error(e.message)
       clear()
     }
   }
@@ -145,7 +145,7 @@ export const useAuthStore = defineStore('auth', () => {
   function redirect() {
     if (isLogged.value) {
       useRouter().push(options.homePage)
-      return;
+      return
     }
 
     useRouter().push(options.loginPage)
@@ -159,8 +159,8 @@ export const useAuthStore = defineStore('auth', () => {
     if (!dataKeys.includes(tokenField) || !dataKeys.includes(tokenFieldExpires))
       throw new Error('Error getting token, field not found')
 
-    let token = res.data[tokenField]
-    let expires = new Date().getTime() + (parseInt(res.data[tokenFieldExpires]) * 1000)
+    const token = res.data[tokenField]
+    const expires = new Date().getTime() + (Number.parseInt(res.data[tokenFieldExpires]) * 1000)
 
     return { token, expires }
   }
@@ -178,6 +178,6 @@ export const useAuthStore = defineStore('auth', () => {
     clear,
     setToken,
     setTokenCookie,
-    redirect
+    redirect,
   }
 })

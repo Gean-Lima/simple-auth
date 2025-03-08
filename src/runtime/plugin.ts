@@ -1,6 +1,6 @@
+import { watch } from 'vue'
 import { defineNuxtPlugin, useCookie } from 'nuxt/app'
 import { useAuthStore } from './store/auth'
-import { watch } from 'vue'
 
 export default defineNuxtPlugin(async (_nuxtApp) => {
   const authStore = useAuthStore()
