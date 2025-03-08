@@ -1,5 +1,6 @@
-import { useAuthStore } from '../store/auth'
+import { useNuxtApp } from '#app';
 
 export const useAuth = () => {
-  return useAuthStore()
+  const nuxtApp = useNuxtApp();
+  return nuxtApp.$auth;
 }

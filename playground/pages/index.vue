@@ -5,7 +5,7 @@ definePageMeta({
 
 const auth = useAuth()
 
-const email = ref('mraz.joannie@example.org')
+const email = ref('test@example.com')
 const passwd = ref('password')
 
 function clickLogin() {

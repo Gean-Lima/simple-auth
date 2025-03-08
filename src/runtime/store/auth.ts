@@ -1,158 +1,183 @@
 import { defineStore } from 'pinia'
-import axios from 'axios'
-import { useRuntimeConfig, useCookie, useRouter } from '#app'
+import axios, { type AxiosResponse } from 'axios'
+import { useRuntimeConfig, useCookie, useRouter, refreshCookie, type CookieOptions } from '#app'
+import { ref } from 'vue'
+import { addMonths } from 'date-fns'
 
-export const useAuthStore = defineStore('auth', {
-  state: () => ({
-    isLogged: false as boolean,
-    token: null as string | null,
-    expires: null as Date | null,
-    user: null as unknown | null,
-  }),
-  actions: {
-    async _setup() {
-      const tokenCookie = useCookie('_auth__token')
-      const tokenExpiresCookie = useCookie('_auth__token_expires')
+export const useAuthStore = defineStore('auth', () => {
+  const expiration = addMonths(new Date(), 3);
+  const dataExpiration = {
+    maxAge: expiration.getTime() / 1000,
+    expires: expiration,
+    readonly: false,
+    watch: true,
+  };
+  const options = useRuntimeConfig().public.simpleAuth
+  const tokenCookie = useCookie('_auth__token', dataExpiration)
+  const tokenExpiresCookie = useCookie('_auth__token_expires', dataExpiration)
 
-      if (!tokenCookie.value || !tokenExpiresCookie.value) return
+  const isLogged = ref(false)
+  const token = ref<string | null>(null)
+  const expires = ref<number | null>(null)
+  const user = ref<any>(null)
 
-      this.setToken(tokenCookie.value, tokenExpiresCookie.value, false)
+  async function _setup() {
+    if (!tokenCookie.value || !tokenExpiresCookie.value) return
 
-      if (new Date().getTime() > tokenExpiresCookie.value) return await this.refresh()
+    setToken(tokenCookie.value, parseInt(tokenExpiresCookie.value))
 
-      await this.me()
-    },
+    if (new Date().getTime() > parseInt(tokenExpiresCookie.value)) await refresh()
 
-    login(data: unknown, autoRedirect = true): Promise<unknown> {
-      const options = useRuntimeConfig().public.simpleAuth
+    await me()
+  }
 
-      return new Promise((resolve, reject) => {
-        axios.request({
-          url: options.baseUrl ? `${options.baseUrl}${options.login.url}` : options.login.url,
-          method: options.login.method,
-          data: data,
-          headers: options.login.headers ?? {},
-        })
-          .then(async (res) => {
-            const dataKeys = Object.keys(res.data)
-            const tokenField = options.login.token.field
-            const tokenFieldExpires = options.login.token.field_expires
-
-            if (!dataKeys.includes(tokenField) || !dataKeys.includes(tokenFieldExpires))
-              throw new Error('Error getting token, field not found')
-
-            this.setToken(res.data[tokenField], res.data[tokenFieldExpires])
-
-            await this.me()
-
-            if (autoRedirect) {
-              useRouter().push(options.homePage)
-              return
-            }
-
-            resolve(res.data)
-          })
-          .catch(err => reject(err))
+  function login(data: unknown, redirectHome = true): Promise<unknown> {
+    return new Promise((resolve, reject) => {
+      axios.request({
+        url: options.baseUrl ? `${options.baseUrl}${options.login.url}` : options.login.url,
+        method: options.login.method,
+        data: data,
+        headers: options.login.headers ?? {},
       })
-    },
+        .then(async (res) => {
+          let { token, expires } = getValuesByResponse(res)
 
-    logout(autoRedirect = true): Promise<unknown> {
-      const options = useRuntimeConfig().public.simpleAuth
+          setTokenCookie(token, expires)
+          setToken(token, expires)
 
-      return new Promise((_, reject) => {
-        axios.request({
-          url: options.baseUrl ? `${options.baseUrl}${options.logout.url}` : options.logout.url,
-          method: options.logout.method,
-          headers: options.logout.headers ?? {},
+          await me()
+
+          resolve(res.data)
+
+          if (redirectHome) redirect()
         })
-          .then(() => this.clearAndRedirect(autoRedirect))
-          .catch(err => reject(err))
+        .catch(err => reject(err))
+    })
+  }
+
+  function logout(redirectLogin = true): Promise<unknown> {
+    return new Promise((_, reject) => {
+      axios.request({
+        url: options.baseUrl ? `${options.baseUrl}${options.logout.url}` : options.logout.url,
+        method: options.logout.method,
+        headers: options.logout.headers ?? {},
       })
-    },
+        .then(() => {
+          clear()
 
-    async refresh() {
-      const options = useRuntimeConfig().public.simpleAuth
-
-      try {
-        const res = await axios.request({
-          url: options.baseUrl ? `${options.baseUrl}${options.refresh.url}` : options.refresh.url,
-          method: options.refresh.method,
-          headers: options.refresh.headers ?? {},
+          if (redirectLogin) redirect()
         })
+        .catch(err => reject(err))
+    })
+  }
 
-        const dataKeys = Object.keys(res.data)
-        const tokenField = options.refresh.token.field
-        const tokenFieldExpires = options.refresh.token.field_expires
+  async function refresh() {
+    try {
+      const res = await axios.request({
+        url: options.baseUrl ? `${options.baseUrl}${options.refresh.url}` : options.refresh.url,
+        method: options.refresh.method,
+        headers: options.refresh.headers ?? {},
+      })
 
-        if (!dataKeys.includes(tokenField) || !dataKeys.includes(tokenFieldExpires))
-          throw new Error('Error getting token, field not found')
+      let { token, expires } = getValuesByResponse(res)
 
-        this.setToken(res.data[tokenField], res.data[tokenFieldExpires])
-      }
-      catch {
-        this.clearAndRedirect()
-      }
-    },
+      setTokenCookie(token, expires)
+      setToken(token, expires)
+    }
+    catch (e: any) {
+      console.error(e.message)
+      clear()
+    }
+  }
 
-    async me() {
-      const options = useRuntimeConfig().public.simpleAuth
+  async function me() {
+    try {
+      const res = await axios.request({
+        url: options.baseUrl ? `${options.baseUrl}${options.me.url}` : options.me.url,
+        method: options.me.method,
+        headers: options.me.headers ?? {},
+      })
 
-      try {
-        const res = await axios.request({
-          url: options.baseUrl ? `${options.baseUrl}${options.me.url}` : options.me.url,
-          method: options.me.method,
-          headers: options.me.headers ?? {},
-        })
+      if (options.me.userField) {
+        if (!Object.keys(res.data).includes(options.me.userField))
+          throw new Error('Error getting user, field not found')
 
-        if (options.me.userField) {
-          if (!Object.keys(res.data).includes(options.me.userField))
-            throw new Error('Error getting user, field not found')
-
-          this.user = res.data[options.me.userField]
-          return
-        }
-
-        this.user = res.data
-      }
-      catch {
-        this.clearAndRedirect()
-      }
-    },
-
-    clearAndRedirect(redirect = true) {
-      const options = useRuntimeConfig().public.simpleAuth
-
-      const tokenCookie = useCookie('_auth__token')
-      const tokenExpiresCookie = useCookie('_auth__token_expires')
-
-      tokenCookie.value = null
-      tokenExpiresCookie.value = null
-
-      this.isLogged = false
-      this.token = null
-      this.expires = null
-
-      if (redirect) useRouter().push(options.loginPage)
-    },
-
-    setToken(token: string, expires: number, cookie = true) {
-      this.isLogged = true
-      this.token = token
-      this.expires = new Date().getTime() + (expires * 1000)
-
-      if (cookie) {
-        const cookieOptions = {
-          expires: new Date(new Date().getTime() + (604800 * 1000)),
-        }
-
-        const tokenCookie = useCookie('_auth__token', cookieOptions)
-        const tokenExpiresCookie = useCookie('_auth__token_expires', cookieOptions)
-
-        tokenCookie.value = this.token
-        tokenExpiresCookie.value = this.expires
+        user.value = res.data[options.me.userField]
+        return
       }
 
-      axios.defaults.headers.common['Authorization'] = `Bearer ${this.token}`
-    },
-  },
+      user.value = res.data
+    }
+    catch (e: any) {
+      console.error(e.message)
+      clear()
+    }
+  }
+
+  function setToken(userToken: string, userExpires: number) {
+    isLogged.value = true
+    token.value = userToken
+    expires.value = userExpires
+
+    axios.defaults.headers.common['Authorization'] = `Bearer ${token.value}`
+  }
+
+  function setTokenCookie(userToken: string, tokenExpires: number) {
+    tokenCookie.value = userToken
+    tokenExpiresCookie.value = tokenExpires?.toString()
+
+    refreshCookie('_auth__token')
+    refreshCookie('_auth__token_expires')
+  }
+
+  function clear() {
+    tokenCookie.value = null
+    tokenExpiresCookie.value = null
+
+    refreshCookie('_auth__token')
+    refreshCookie('_auth__token_expires')
+
+    isLogged.value = false
+    token.value = null
+    expires.value = null
+  }
+
+  function redirect() {
+    if (isLogged.value) {
+      useRouter().push(options.homePage)
+      return;
+    }
+
+    useRouter().push(options.loginPage)
+  }
+
+  function getValuesByResponse(res: AxiosResponse) {
+    const dataKeys = Object.keys(res.data)
+    const tokenField = options.login.token.field
+    const tokenFieldExpires = options.login.token.field_expires
+
+    if (!dataKeys.includes(tokenField) || !dataKeys.includes(tokenFieldExpires))
+      throw new Error('Error getting token, field not found')
+
+    let token = res.data[tokenField]
+    let expires = new Date().getTime() + (parseInt(res.data[tokenFieldExpires]) * 1000)
+
+    return { token, expires }
+  }
+
+  return {
+    isLogged,
+    token,
+    expires,
+    user,
+    _setup,
+    login,
+    logout,
+    refresh,
+    me,
+    clear,
+    setToken,
+    setTokenCookie,
+    redirect
+  }
 })
