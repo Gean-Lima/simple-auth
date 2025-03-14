@@ -1,6 +1,22 @@
 # Changelog
 
 
+## v1.5.1
+
+[compare changes](https://github.com/Gean-Lima/simple-auth/compare/v1.5.0...v1.5.1)
+
+### 🩹 Fixes
+
+- Bug fix ([24cdad8](https://github.com/Gean-Lima/simple-auth/commit/24cdad8))
+
+### 🏡 Chore
+
+- **release:** V1.5.0 ([9c94ad5](https://github.com/Gean-Lima/simple-auth/commit/9c94ad5))
+
+### ❤️ Contributors
+
+- Gean-Lima <geanlimasp12345@gmail.com>
+
 ## v1.5.0
 
 [compare changes](https://github.com/Gean-Lima/simple-auth/compare/v1.4.0...v1.5.0)
