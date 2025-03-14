@@ -2,9 +2,9 @@ import { ref } from 'vue'
 import { addMonths } from 'date-fns'
 import axios, { type AxiosResponse } from 'axios'
 import { defineStore } from 'pinia'
-import { useRuntimeConfig, useCookie, useRouter, refreshCookie, navigateTo } from '#app'
 import type { AuthData, ExtractConfig } from '../types/auth'
 import type { ModuleOptions } from '../types/module'
+import { useRuntimeConfig, useCookie, refreshCookie, navigateTo } from '#app'
 
 export const useAuthStore = defineStore('auth', () => {
   const expiration = addMonths(new Date(), 3)
@@ -16,7 +16,7 @@ export const useAuthStore = defineStore('auth', () => {
   const tokenCookie = useCookie('_auth__token', dataExpiration)
   const tokenExpiresCookie = useCookie('_auth__token_expires', dataExpiration)
 
-  type UserDefinedType = ExtractConfig<typeof options.data.dataType>;
+  type UserDefinedType = ExtractConfig<typeof options.data.dataType>
 
   const isLogged = ref(false)
   const token = ref<string | null>(null)
@@ -34,43 +34,33 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   async function login(data: AuthData, redirect = true) {
-    try {
-      const response = await axios.request({
-        url: options.baseUrl ? `${options.baseUrl}${options.login.url}` : options.login.url,
-        method: options.login.method,
-        data: data,
-        headers: options.login.headers ?? {},
-      })
+    const response = await axios.request({
+      url: options.baseUrl ? `${options.baseUrl}${options.login.url}` : options.login.url,
+      method: options.login.method,
+      data: data,
+      headers: options.login.headers ?? {},
+    })
 
-      const { token, expires } = getValuesByResponse(response)
+    const { token, expires } = getValuesByResponse(response)
 
-      setTokenCookie(token, expires)
-      setToken(token, expires)
+    setTokenCookie(token, expires)
+    setToken(token, expires)
 
-      await me()
+    await me()
 
-      if (redirect) redirectHome()
-    }
-    catch (e) {
-      throw e;
-    }
+    if (redirect) redirectHome()
   }
 
   async function logout(redirect = true) {
-    try {
-      await axios.request({
-        url: options.baseUrl ? `${options.baseUrl}${options.logout.url}` : options.logout.url,
-        method: options.logout.method,
-        headers: options.logout.headers ?? {},
-      })
+    await axios.request({
+      url: options.baseUrl ? `${options.baseUrl}${options.logout.url}` : options.logout.url,
+      method: options.logout.method,
+      headers: options.logout.headers ?? {},
+    })
 
-      clear()
+    clear()
 
-      if (redirect) redirectLogin()
-    }
-    catch (e) {
-      throw e
-    }
+    if (redirect) redirectLogin()
   }
 
   async function refresh() {
@@ -180,6 +170,6 @@ export const useAuthStore = defineStore('auth', () => {
     me,
     clear,
     setToken,
-    setTokenCookie
+    setTokenCookie,
   }
 })

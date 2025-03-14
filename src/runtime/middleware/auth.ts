@@ -2,13 +2,13 @@ import { defineNuxtRouteMiddleware, navigateTo, useRuntimeConfig } from 'nuxt/ap
 import type { ModuleOptions } from '../types/module'
 import { useAuth } from '#imports'
 
-export default defineNuxtRouteMiddleware((to, from) => {
-  const auth = useAuth();
+export default defineNuxtRouteMiddleware((to, _from) => {
+  const auth = useAuth()
   const options = useRuntimeConfig().public.simpleAuth as ModuleOptions
 
-  if (auth.isLogged) return; 
+  if (auth.isLogged) return
 
-  if (to.path == options.loginPage) return;
+  if (to.path == options.loginPage) return
 
-  return navigateTo(options.loginPage);
+  return navigateTo(options.loginPage)
 })

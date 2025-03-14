@@ -1,3 +1,3 @@
 import { useAuthStore } from '../store/auth'
 
-export const useAuth = () => useAuthStore();
+export const useAuth = () => useAuthStore()
