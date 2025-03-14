@@ -32,5 +32,8 @@ export interface ModuleOptions {
     method: 'POST' | 'GET'
     userField?: string
     headers?: AxiosHeaders
+  },
+  data: {
+    dataType: { id: 'string | number' }
   }
 }

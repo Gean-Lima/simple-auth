@@ -2,24 +2,26 @@ import { ref } from 'vue'
 import { addMonths } from 'date-fns'
 import axios, { type AxiosResponse } from 'axios'
 import { defineStore } from 'pinia'
-import { useRuntimeConfig, useCookie, useRouter, refreshCookie } from '#app'
+import { useRuntimeConfig, useCookie, useRouter, refreshCookie, navigateTo } from '#app'
+import type { AuthData, ExtractConfig } from '../types/auth'
+import type { ModuleOptions } from '../types/module'
 
 export const useAuthStore = defineStore('auth', () => {
   const expiration = addMonths(new Date(), 3)
   const dataExpiration = {
     maxAge: expiration.getTime() / 1000,
     expires: expiration,
-    readonly: false,
-    watch: true,
   }
-  const options = useRuntimeConfig().public.simpleAuth
+  const options = useRuntimeConfig().public.simpleAuth as ModuleOptions
   const tokenCookie = useCookie('_auth__token', dataExpiration)
   const tokenExpiresCookie = useCookie('_auth__token_expires', dataExpiration)
+
+  type UserDefinedType = ExtractConfig<typeof options.data.dataType>;
 
   const isLogged = ref(false)
   const token = ref<string | null>(null)
   const expires = ref<number | null>(null)
-  const user = ref<unknown>(null)
+  const user = ref<UserDefinedType | null>(null)
 
   async function _setup() {
     if (!tokenCookie.value || !tokenExpiresCookie.value) return
@@ -31,62 +33,62 @@ export const useAuthStore = defineStore('auth', () => {
     await me()
   }
 
-  function login(data: unknown, redirectHome = true): Promise<unknown> {
-    return new Promise((resolve, reject) => {
-      axios.request({
+  async function login(data: AuthData, redirect = true) {
+    try {
+      const response = await axios.request({
         url: options.baseUrl ? `${options.baseUrl}${options.login.url}` : options.login.url,
         method: options.login.method,
         data: data,
         headers: options.login.headers ?? {},
       })
-        .then(async (res) => {
-          const { token, expires } = getValuesByResponse(res)
 
-          setTokenCookie(token, expires)
-          setToken(token, expires)
+      const { token, expires } = getValuesByResponse(response)
 
-          await me()
+      setTokenCookie(token, expires)
+      setToken(token, expires)
 
-          resolve(res.data)
+      await me()
 
-          if (redirectHome) redirect()
-        })
-        .catch(err => reject(err))
-    })
+      if (redirect) redirectHome()
+    }
+    catch (e) {
+      throw e;
+    }
   }
 
-  function logout(redirectLogin = true): Promise<unknown> {
-    return new Promise((_, reject) => {
-      axios.request({
+  async function logout(redirect = true) {
+    try {
+      await axios.request({
         url: options.baseUrl ? `${options.baseUrl}${options.logout.url}` : options.logout.url,
         method: options.logout.method,
         headers: options.logout.headers ?? {},
       })
-        .then(() => {
-          clear()
 
-          if (redirectLogin) redirect()
-        })
-        .catch(err => reject(err))
-    })
+      clear()
+
+      if (redirect) redirectLogin()
+    }
+    catch (e) {
+      throw e
+    }
   }
 
   async function refresh() {
     try {
-      const res = await axios.request({
+      const response = await axios.request({
         url: options.baseUrl ? `${options.baseUrl}${options.refresh.url}` : options.refresh.url,
         method: options.refresh.method,
         headers: options.refresh.headers ?? {},
       })
 
-      const { token, expires } = getValuesByResponse(res)
+      const { token, expires } = getValuesByResponse(response)
 
       setTokenCookie(token, expires)
       setToken(token, expires)
     }
-    catch (e: unknown) {
-      if (e instanceof Error) console.error(e.message)
+    catch (e) {
       clear()
+      throw e
     }
   }
 
@@ -108,9 +110,9 @@ export const useAuthStore = defineStore('auth', () => {
 
       user.value = res.data
     }
-    catch (e: unknown) {
-      if (e instanceof Error) console.error(e.message)
+    catch (e) {
       clear()
+      throw e
     }
   }
 
@@ -140,15 +142,16 @@ export const useAuthStore = defineStore('auth', () => {
     isLogged.value = false
     token.value = null
     expires.value = null
+
+    axios.defaults.headers.common['Authorization'] = undefined
   }
 
-  function redirect() {
-    if (isLogged.value) {
-      useRouter().push(options.homePage)
-      return
-    }
+  function redirectHome() {
+    navigateTo(options.homePage)
+  }
 
-    useRouter().push(options.loginPage)
+  function redirectLogin() {
+    navigateTo(options.loginPage)
   }
 
   function getValuesByResponse(res: AxiosResponse) {
@@ -177,7 +180,6 @@ export const useAuthStore = defineStore('auth', () => {
     me,
     clear,
     setToken,
-    setTokenCookie,
-    redirect,
+    setTokenCookie
   }
 })
